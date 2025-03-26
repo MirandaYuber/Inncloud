@@ -1,0 +1,43 @@
+services:
+    innclod-app:
+        container_name: innclod
+        build:
+            context: ../../../
+            dockerfile: ./.devops/docker/develop/Dockerfile
+        depends_on:
+            - innclod-nginx
+        volumes:
+            - ../../../:/var/www/app
+            - ~/storage_block/innclod/volumen_files:/var/www/volumen_files
+            - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+
+    innclod-nginx:
+        image: nginx:alpine
+        container_name: innclod-nginx
+        restart: unless-stopped
+        tty: true
+        depends_on:
+            - innclod-db
+        volumes:
+            - ../../../public:/var/www/app/public
+            - ./nginx/conf.d/:/etc/nginx/templates
+        environment:
+            NGINX_FASTCGI_PASS: "innclod:9000"
+
+    innclod-db:
+        image: postgres:16
+        container_name: innclod-db
+        environment:
+            POSTGRES_PASSWORD: "secret"
+            POSTGRES_USER: "yuber"
+            POSTGRES_DB: "innclod-db"
+        volumes:
+            - ~/storage_block/innclod/postgres/data:/var/lib/postgresql/data
+
+#docker network create innclod-network
+networks:
+    default:
+        external:
+            name: innclod-network
+
+
