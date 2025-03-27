@@ -2,7 +2,6 @@ services:
   innclod-nginx:
     ports:
       - "8080:80"
-  innclod-postgres:
+  innclod-db:
     ports:
-    - "5433:5432"
-
+      - "5433:5432"
